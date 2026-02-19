@@ -428,7 +428,8 @@ class CameraControls {
         offset.subVectors(camera.position, target)
         offset.applyQuaternion(quat)
         spherical.setFromVector3(offset)
-        let rotation = (this.mouseX - this.prevMouseX)*0.005
+        let orbitSign = isInvertOrbitYEnabled() ? -1 : 1
+        let rotation = (this.mouseX - this.prevMouseX)*0.005*orbitSign
         let tiltSign = isInvertOrbitYEnabled() ? -1 : 1
         let tilt = (this.mouseY - this.prevMouseY)*0.005*tiltSign
   

@@ -349,7 +349,7 @@ const CameraPanelInspector = connect(
             <div className="camera-item shots" {...shotsizeTooltipEvents}>
                 <div className="select">
                     <Checkbox
-                      label="Invert RMB Vertical Orbit"
+                      label="Invert RMB Orbit (Horizontal + Vertical)"
                       checked={invertOrbitY}
                       onClick={toggleInvertOrbitY}
                     />

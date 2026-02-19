@@ -4,6 +4,7 @@ setlocal
 cd /d "%~dp0"
 set "ELECTRON_RUN_AS_NODE="
 set "STORYBOARDER_SKIP_DEVTOOLS=1"
+set "NODE_NO_WARNINGS=1"
 
 if not exist "node_modules" (
   echo Installing dependencies...
