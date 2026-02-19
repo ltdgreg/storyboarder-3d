@@ -17,9 +17,21 @@ import { ShotSizes, ShotAngles } from '../../utils/cameraUtils'
 import { useDrag } from 'react-use-gesture'
 
 import KeyCommandsSingleton from '../KeyHandler/KeyCommandsSingleton'
+import Checkbox from '../Checkbox'
 
 import useTooltip from '../../../hooks/use-tooltip'
 import { useTranslation } from 'react-i18next'
+
+const INVERT_ORBIT_Y_STORAGE_KEY = 'shot-generator:invert-right-mouse-orbit-y'
+
+const getInvertOrbitYSetting = () => {
+  try {
+    const value = window.localStorage.getItem(INVERT_ORBIT_Y_STORAGE_KEY)
+    return value !== 'false'
+  } catch (err) {
+    return true
+  }
+}
 /**
  * Return the first index containing an *item* which is greater than *item*.
  * @arguments _(item)_
@@ -80,6 +92,7 @@ const CameraPanelInspector = connect(
     const dragInfo = useRef({prev: [0, 0], current: [0, 0]})
     const { t } = useTranslation()
     const fakeCamera = useRef()
+    const [invertOrbitY, setInvertOrbitY] = useState(getInvertOrbitYSetting)
     useEffect(() => {
       setCurrentShotSize(shotInfo.size)
     }, [shotInfo.size, activeCamera])
@@ -245,6 +258,14 @@ const CameraPanelInspector = connect(
       setCameraShot(activeCamera.id, {size, angle})
     }
 
+    const toggleInvertOrbitY = () => {
+      let nextValue = !invertOrbitY
+      setInvertOrbitY(nextValue)
+      try {
+        window.localStorage.setItem(INVERT_ORBIT_Y_STORAGE_KEY, String(nextValue))
+      } catch (err) {}
+    }
+
     const shotSizes = [
       { value: ShotSizes.EXTREME_CLOSE_UP,  label: "Extreme Close Up" },
       { value: ShotSizes.VERY_CLOSE_UP,     label: "Very Close Up" },
@@ -326,6 +347,13 @@ const CameraPanelInspector = connect(
                 <div className="camera-item-label">{t("shot-generator.camera-panel.lens")}: { focalLength.toFixed(2) }mm</div>
             </div>
             <div className="camera-item shots" {...shotsizeTooltipEvents}>
+                <div className="select">
+                    <Checkbox
+                      label="Invert RMB Vertical Orbit"
+                      checked={invertOrbitY}
+                      onClick={toggleInvertOrbitY}
+                    />
+                </div>
                 <div className="select">
                     <Select
                         label="Shot Size"

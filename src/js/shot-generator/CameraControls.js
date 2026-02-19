@@ -2,6 +2,18 @@ import * as THREE from 'three'
 import KeyCommandsSingleton from './components/KeyHandler/KeyCommandsSingleton'
 import ResourceManager from '../shared/IK/ResourceManager'
 import '../shared/IK/utils/Object3dExtension'
+
+const INVERT_ORBIT_Y_STORAGE_KEY = 'shot-generator:invert-right-mouse-orbit-y'
+
+const isInvertOrbitYEnabled = () => {
+  try {
+    const value = window.localStorage.getItem(INVERT_ORBIT_Y_STORAGE_KEY)
+    return value !== 'false'
+  } catch (err) {
+    return true
+  }
+}
+
 class CameraControls {
   
   constructor ( object, domElement, options = {}, target = null ) {
@@ -417,7 +429,8 @@ class CameraControls {
         offset.applyQuaternion(quat)
         spherical.setFromVector3(offset)
         let rotation = (this.mouseX - this.prevMouseX)*0.005
-        let tilt = (this.mouseY - this.prevMouseY)*0.005
+        let tiltSign = isInvertOrbitYEnabled() ? -1 : 1
+        let tilt = (this.mouseY - this.prevMouseY)*0.005*tiltSign
   
         spherical.theta += rotation
         spherical.phi += tilt

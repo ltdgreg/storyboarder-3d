@@ -72,7 +72,7 @@ auth.json can be saved/loaded, e.g.:
 const store = configureStore()
 
 
-if (isDev) {
+if (isDev && process.env.STORYBOARDER_SKIP_DEVTOOLS !== '1') {
   const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer')
 
   app.whenReady().then(() => {

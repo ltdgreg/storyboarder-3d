@@ -1,4 +1,4 @@
-const { BrowserWindow, ipcMain, app, dialog } = electron = require('electron')
+const { BrowserWindow, ipcMain, app, dialog, screen } = electron = require('electron')
 const isDev = require('electron-is-dev')
 const SettingsService = require("./SettingsService")
 const path = require('path')
@@ -16,6 +16,31 @@ let memento = {
   height: windowSize.height,
 }
 
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
+
+const getVisibleBounds = bounds => {
+  // If we don't have a saved position yet, let Electron center the window.
+  if (bounds.x == null || bounds.y == null) return bounds
+
+  const display = screen.getDisplayMatching({
+    x: bounds.x,
+    y: bounds.y,
+    width: bounds.width,
+    height: bounds.height
+  })
+  const { x, y, width, height } = display.workArea
+
+  const nextWidth = Math.min(bounds.width, width)
+  const nextHeight = Math.min(bounds.height, height)
+
+  return {
+    width: nextWidth,
+    height: nextHeight,
+    x: clamp(bounds.x, x, x + width - nextWidth),
+    y: clamp(bounds.y, y, y + height - nextHeight)
+  }
+}
+
 const reveal = onComplete => {
   win.show()
   win.focus()
@@ -28,7 +53,7 @@ const show = async (onComplete) => {
     return
   }
 
-  let { x, y, width, height } = memento
+  let { x, y, width, height } = getVisibleBounds(memento)
   win = new BrowserWindow({
     minWidth:  isDev ? undefined : 1024 - 30,
     minHeight: isDev ? undefined :  768 - 30,
